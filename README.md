@@ -1,2 +1,4 @@
-# custom_nagios_plugins
-Custom Nagios plugins that I wrote
+# Custom Nagios Plugins
+
+This repo contains a bunch of Nagios plugins that I wrote.
+You're welcome to use them.
