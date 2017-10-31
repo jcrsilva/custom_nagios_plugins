@@ -51,7 +51,7 @@ class CheckDNS(nagiosplugin.Resource):
             return [
                 nagiosplugin.Metric(
                     name=e.message,
-                    value=True,
+                    value=False,
                     context='dns'
                 )
             ]
@@ -59,7 +59,7 @@ class CheckDNS(nagiosplugin.Resource):
             return [
                 nagiosplugin.Metric(
                     name=e.message,
-                    value=True,
+                    value=False,
                     context='dns'
                 )
             ]
@@ -79,6 +79,7 @@ class CheckDNSContext(nagiosplugin.Context):
 
     def describe(self, metric):
         return metric.name
+
 
 def get_args():
     argp = argparse.ArgumentParser(
