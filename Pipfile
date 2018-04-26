@@ -4,6 +4,11 @@ verify_ssl = true
 name = "pypi"
 
 [dev-packages]
+"flake8" = "*"
+"flake8-docstrings" = "*"
+"flake8-import-order" = "*"
+"pep8-naming" = "*"
+"flake8-colors" = "*"
 
 [packages]
 nagiosplugin = "==1.2.4"
