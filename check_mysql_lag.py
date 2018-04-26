@@ -13,7 +13,7 @@ If the instance is a Master, it just returns OK.
 
 It uses the nagiosplugin framework to reduce boilerplate code and make outputting
 perfdata easier.
-It uses pumysql, a pure python implementation of a mysql driver.
+It uses pymysql, a pure python implementation of a mysql driver.
 """
 
 __author__ = 'jcrsilva'
