@@ -1,15 +1,7 @@
 #!/usr/bin/env python
 
-import argparse
-
-import dns
-from dns.resolver import NXDOMAIN
-from dns.exception import Timeout
-import nagiosplugin
-from nagiosplugin.state import Ok, Critical
-
-__doc__ = """
-This is a simple Nagios plugin to query a DNS server
+"""
+This is a simple Nagios plugin to query a DNS server.
 
 Returns OK if the server replies.
 """
@@ -18,28 +10,47 @@ __author__ = 'jcrsilva'
 __license__ = 'The Unlicense'
 __version__ = '1.0.0'
 
+import argparse
+
+from dns.exception import Timeout
+from dns.resolver import NXDOMAIN, Resolver
+
+import nagiosplugin
+
 
 class CheckDNS(nagiosplugin.Resource):
-    _dns_resolver = None
+    """CheckDNS class."""
+
+    __dns_resolver = None
 
     @property
-    def dns_resolver(self):
-        if not self._dns_resolver:
-            self._dns_resolver = dns.resolver.Resolver()
+    def _dns_resolver(self):
+        if not self.__dns_resolver:
+            self.__dns_resolver = Resolver()
 
-            self._dns_resolver.nameservers = [self.args.hostname]
-            self._dns_resolver.port = self.args.port
-            self._dns_resolver.timeout = self.args.timeout
-            self._dns_resolver.lifetime = self.args.timeout
+            self.__dns_resolver.nameservers = [self.args.hostname]
+            self.__dns_resolver.port = self.args.port
+            self.__dns_resolver.timeout = self.args.timeout
+            self.__dns_resolver.lifetime = self.args.timeout
 
-        return self._dns_resolver
+        return self.__dns_resolver
 
     def __init__(self, args):
+        """
+        Class constructor.
+
+        :param args: command line arguments
+        """
         self.args = args
 
     def probe(self):
+        """
+        Nagios probe method.
+
+        :return: Metrics
+        """
         try:
-            answer = self.dns_resolver.query(self.args.query)
+            answer = self._dns_resolver.query(self.args.query)
             return [
                 nagiosplugin.Metric(
                     name=str(answer.rrset),
@@ -68,20 +79,41 @@ class CheckDNS(nagiosplugin.Resource):
 
 
 class CheckDNSContext(nagiosplugin.Context):
+    """CheckDNS context for nagiosplugin."""
+
     def __init__(self):
+        """Constructor."""
         super(self.__class__, self).__init__('dns')
 
     def evaluate(self, metric, resource):
+        """
+        Evaluate metric result.
+
+        :param metric: Metric
+        :param resource: Resource
+        :return: Metric state
+        """
         if metric.value:
-            return self.result_cls(Ok, metric=metric)
+            return self.result_cls(nagiosplugin.state.Ok, metric=metric)
         else:
-            return self.result_cls(Critical, metric=metric)
+            return self.result_cls(nagiosplugin.state.Critical, metric=metric)
 
     def describe(self, metric):
+        """
+        Describe the metric.
+
+        :param metric: Metric
+        :return: Metric description
+        """
         return metric.name
 
 
 def get_args():
+    """
+    Grab args from CLI.
+
+    :return: Argument dict
+    """
     argp = argparse.ArgumentParser(
         description=__doc__
     )
@@ -107,11 +139,17 @@ def get_args():
 
 @nagiosplugin.guarded
 def main():
+    """
+    Main.
+
+    :return:
+    """
     args = get_args()
     nagiosplugin.Check(
         CheckDNS(args),
         CheckDNSContext(),
     ).main()
+
 
 if __name__ == '__main__':
     main()
